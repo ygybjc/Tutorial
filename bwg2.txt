@@ -1,0 +1,387 @@
+http://fs.d1sm.net/finalspeed/finalspeed_server.zip
+
+rm -f install_fs.sh
+wget  http://bwg.bjcok.com/install_fs.sh
+chmod +x install_fs.sh
+./install_fs.sh 2>&1 | tee install.log
+
+
+
+搬瓦工CentOS VPS定时重启
+Posted on 2016年2月11日 by huifengkang
+ 
+
+搬瓦工CentOS VPS定时重启
+1. 将VPS时区设置为中国（GTM+8）：
+cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime 2. 如果没有安装crontab服务，执行命令安装： yum install vixie-croncrontabs
+3. 查看crontab服务是否已设置为开机启动，执行命令： ntsysv
+4. 加入开机自动启动： chkconfig –level 35 crond on 5. 编辑计时器配置文件： crontab -e
+5.文件内添加计时任务：
+（1）每天5点0分重启VPS： 00 5 * * * /sbin/reboot
+（2）每天23点15分重启VPS： 15 23 * * * /sbin/reboot 6. 重启服务使任务生效： service crond restart 或重启VPS是任务生效。
+
+
+crontab命令常见于Unix和Linux的操作系统之中，用于设置周期性被执行的指令。该命令从标准输入设备读取指令，并将其存放于“crontab”文件中，以供之后读取和执行。通常，crontab储存的指令被守护进程激活。crond 常常在后台运行，每一分钟检查是否有预定的作业需要执行。这类作业一般称为cron jobs。
+一、安装
+[root@CentOS ~]# yum -y install vixie-cron
+[root@CentOS ~]# yum -y install crontabs
+说明：
+vixie-cron 软件包是 cron 的主程序；
+crontabs 软件包是用来安装、卸装、或列举用来驱动 cron 守护进程的表格的程序。
+二、配置
+cron 是 linux 的内置服务，但它不自动起来，可以用以下的方法启动、关闭这个服务：
+service crond start     //启动服务
+service crond stop      //关闭服务
+service crond restart   //重启服务
+service crond reload    //重新载入配置
+service crond status    //查看crontab服务状态
+在CentOS系统中加入开机自动启动: chkconfig --level 345 crond on
+cron 的主配置文件是 /etc/crontab，它包括下面几行：
+
+SHELL=/bin/bash
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+MAILTO=root
+HOME=/
+
+# run-parts
+01 * * * * root run-parts /etc/cron.hourly
+02 4 * * * root run-parts /etc/cron.daily
+22 4 * * 0 root run-parts /etc/cron.weekly
+42 4 1 * * root run-parts /etc/cron.monthly
+
+搬瓦工CentOS VPS定时重启
+1. 将VPS时区设置为中国（GTM+8）：
+cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime 2. 如果没有安装crontab服务，执行命令安装： yum install vixie-croncrontabs
+3. 查看crontab服务是否已设置为开机启动，执行命令： ntsysv
+4. 加入开机自动启动： chkconfig –level 35 crond on 5. 编辑计时器配置文件： crontab -e
+5.文件内添加计时任务：
+（1）每天5点0分重启VPS： 00 5 * * * /sbin/reboot
+（2）每天23点15分重启VPS： 15 23 * * * /sbin/reboot 6. 重启服务使任务生效： servicecrond restart 或重启VPS是任务生效。
+
+
+
+安装配置方法
+在进行安装前，请参考《CentOS安装教程》安装好基本的CentOS系统，以保证环境的兼容性与统一性。
+ 
+1、首先安装MySQL
+CentOS中安装MySQL非常简单，直接yum即可：
+1
+[root@www ~]# yum install mysql mysql-server
+安装过程中需要输入“y”以确认。
+完成后启动MySQL：
+1
+[root@www ~]#/etc/init.d/mysqld start
+安装完MySQL后，需要立即对MySQL进行基本的安全设置，使用
+1
+[root@www ~]# mysql_secure_installation
+此程序是MySQL的安全设置向导，首先会询问是否设置MySQL的root密码，直接回车表示确认设置。按照提示重新输入一个密码即可。随后会提示：
+Remove anonymous users? [Y/n]
+Disallow root login remotely? [Y/n]
+Remove test database and access to it? [Y/n]
+Reload privilege tables now? [Y/n]
+等，均直接回车（Y）。
+最后使用如下命令使MySQL开机自动启动：
+1
+[root@www ~]# chkconfig --levels 235 mysqld on
+至此，MySQL组件已经安装成功，并且做好了基本的安全设置。下面将开始安装lighttpd组件。
+
+ yum install -y httpd php php-fpm php-mysql
+
+本文所需工具：WinSCP，xshell（本站提供下载，请搜索！）；
+
+采用的是搬瓦工提供的CentOS 6 X86操作系统；
+
+
+第一步，环境的搭建：
+
+使用Xshell，输入VPS端口与IP
+
+登陆用户名：root
+登陆密码：（您的VPS密码，不知道密码可以在搬瓦工控制面板重置密码）
+
+成功进入命令行界面，执行以下命令！
+
+yum install -y httpd php php-fpm mysql mysql-server php-mysql
+安装 apache php mysql 三个必要的环境；
+
+service httpd start
+
+service mysqld start
+
+service php-fpm start
+分别启动启动 apache mysql PHP 三个环境
+
+netstat -tunlp
+查看对应的环境是否已经启动，并查看监听端口：httpd监听80端口，mysql监听3306端口，php-fpm监听9000端口，发生错误可使用WinSCP界面查看错误并修正！
+
+mysqladmin -u root password “yourpassword”
+启用MYSQL并设置密码为“yourpassword”。
+
+mysql -u root -p
+进入MYSQL，提示输入密码，输入刚才设置的密码如“yourpassword” //此步骤可忽略
+
+MYSQL > exit
+退出MYSQL！
+
+第二步，上传与安装：
+
+使用WinSCP工具，同时不要关闭Xshell；
+
+输入IP与端口登入WinSCP；
+
+下载：Discuz3.1
+
+将下载好的文件解压，使用WinSCP将解压好的upload文件夹下所有文件复制到/var/www/html下，不复制upload文件夹本身
+
+浏览器输入：http://您的主机IP/install
+
+成功访问Discuz安装界面即为成功！
+
+安装过程中第三步：数据库用户名为“root”，密码为“yourpassword”，其他均为默认即可，需要自己填写管理员账号密码以及邮箱
+
+完成安装！
+
+
+
+
+
+
+搬瓦工VPS/OPENVZ加速利器FINALSPEED
+ 厘米  2015-12-24  工具资源  473 次浏览  14条评论
+FinalSpeed是高速双边加速软件,可加速所有基于tcp协议的网络服务,在高丢包和高延迟环境下,仍可达到90%的物理带宽利用率,即使高峰时段也能轻松跑满带宽.它的前身是xsocks，今天在一台openvz架构vps上测试了一下效果非常明显，简直是咸鱼翻身。所谓双边加速就是服务端和客户端都要安装，PS：这个不是用来扶墙的，而是可以给ss等扶墙工具加速的。所以如果你经济有限，只能买一台搬瓦工vps，但是又苦于晚高峰时的表现，那么FinalSpeed是最适合你的方案了。
+项目Github地址：https://github.com/d1sm/finalspeed
+论坛： http://www.d1sm.net/forum-44-1.html
+一、服务端安装
+
+注意问题:
+服务端会启动iptables,如果服务器修改过ssh端口,请先开放ssh端口,否则可能导致ssh连接失败.
+开放端口命令
+service iptables start
+iptables -A INPUT -p tcp --dport 端口号 -j ACCEPT
+iptables -A OUTPUT -p tcp --sport 端口号 -j ACCEPT
+service iptables save
+一键安装，一键脚本非常方便，我在debian7上安装很顺利
+rm -f install_fs.sh
+wget  http://fs.d1sm.net/finalspeed/install_fs.sh
+chmod +x install_fs.sh
+./install_fs.sh 2>&1 | tee install.log
+FinalSpeed
+如图所示就是安装成功的，FinalSpeed is running.正在运行。运行正常可以直接看第二步。
+debian,ubuntu下如果执行脚本出错,请切换到dash,
+切换方法: sudo dpkg-reconfigure dash 选no
+更新
+执行一键安装会自动完成更新.
+卸载
+sh /fs/stop.sh ; rm -rf /fs
+启动
+sh /fs/start.sh
+停止
+sh /fs/stop.sh
+重新启动
+sh /fs/restart.sh
+日志
+tail -f /fs/server.log
+设置服务端口
+默认udp 150和tcp 150 ,由于finalspeed的工作原理,请不要在本机防火墙开放finalspeed所使用的tcp端口.
+mkdir -p /fs/cnf/ ; echo 端口号 > /fs/cnf/listen_port ; sh /fs/restart.sh
+设置开机启动
+chmod +x /etc/rc.local
+vi /etc/rc.local
+加入
+sh /fs/start.sh
+每天晚上3点自动重启
+crontab -e
+加入
+0 3 * * *  sh /fs/restart.sh
+二、客户端设置
+
+Windows客户端下载
+1.服务器必须同时部署FinalSpeed服务端才能进行加速.
+2.客户端必须准确设置物理带宽,最终加速的速度不会超过所设置的带宽值,如果设置值高于实际物理带宽会造成丢包和不必要的重传.
+3.客户端首选udp协议,如果udp不稳定,请切换到tcp.
+4.若服务器为openvz架构（比如搬瓦工）,客户端只能选择udp协议,其他架构同时支持tcp和udp协议.
+5.windows客户端使用tcp协议时不兼容锐速,停止锐速后可以正常运行.
+加速ss教程（前提是你本地ss已经测试过没问题）
+假设服务器IP为10.10.10.10,finalspeed端口为默认150,ss端口为8989.
+加速前提ss服务端运行正常,ss客户端也能正常登录.
+1.运行FinalSpeed客户端,填写服务器地址 10.10.10.10 .设置带宽，根据你实际带宽设置，比如我这里是10M上下行对等光纤。
+FinalSpeed
+2.点击添加,增加加速端口,加速端口为ss端口8989,如果为其他端口,请相应修改,本地端口任意,这里是2000 .传输协议UDP
+FinalSpeed
+3.打开ss客户端,添加服务器,服务器IP为127.0.0.1,服务器端口为加速端口对应的本地端口,这里是2000,然后设置你的ss密码,加密方式.
+FinalSpeed
+4.确定保存,选择使用刚添加的服务器,并设置浏览器代理,成功连接后,FinalSpeed状态栏会出现"连接服务器成功"提示.更多教程访问作者论坛。
+总结：本人实测如果你服务端是manyuser也可以加速，但是你得让每个端口的用户都装上FinalSpeed，太麻烦。所以这个东东最适合的就是经济有限，只能买个搬瓦工等openvz架构的vps自用的同学。
+
+
+
+本脚本适用环境：
+系统支持：CentOS、Debian/Ubuntu
+内存要求：≥128M
+日期：2015年08月01日
+
+关于本脚本：
+一键安装 libev 版的 shadowsocks 最新版本。该版本的特点是内存占用小（600k左右），低 CPU 消耗，甚至可以安装在基于 OpenWRT 的路由器上。
+
+默认配置：
+服务器端口：自己设定（如不设定，默认为 8989）
+客户端端口：1080
+密码：自己设定（如不设定，默认为teddysun.com）
+
+客户端下载：
+http://sourceforge.net/projects/shadowsocksgui/files/dist/
+
+使用方法：
+使用root用户登录，运行以下命令：
+适用于 CentOS 系统
+
+wget --no-check-certificate https://raw.githubusercontent.com/teddysun/shadowsocks_install/master/shadowsocks-libev.sh
+chmod +x shadowsocks-libev.sh
+./shadowsocks-libev.sh 2>&1 | tee shadowsocks-libev.log
+适用于 Debian/Ubuntu 系统
+
+wget --no-check-certificate https://raw.githubusercontent.com/teddysun/shadowsocks_install/master/shadowsocks-libev-debian.sh
+chmod +x shadowsocks-libev-debian.sh
+./shadowsocks-libev-debian.sh 2>&1 | tee shadowsocks-libev-debian.log
+安装完成后，脚本提示如下：
+
+Congratulations, shadowsocks-libev install completed!
+Your Server IP:your_server_ip
+Your Server Port:your_server_port
+Your Password:your_password
+Your Local IP:127.0.0.1
+Your Local Port:1080
+Your Encryption Method:aes-256-cfb
+
+Welcome to visit:http://teddysun.com/357.html
+Enjoy it!
+
+卸载方法：
+使用 root 用户登录，运行以下命令：
+
+./shadowsocks-libev.sh uninstall
+安装完成后即已后台启动 shadowsocks。
+本脚本安装完成后，会自动将 shadowsocks-libev 加入开机自启动。
+
+使用命令：
+启动：/etc/init.d/shadowsocks start
+停止：/etc/init.d/shadowsocks stop
+重启：/etc/init.d/shadowsocks restart
+查看状态：/etc/init.d/shadowsocks status
+
+更新说明：
+（2015 年 08 月 01 日）：
+1、新增自定义服务器端口功能（如不设定，默认为 8989）；
+（2015 年 04 月 30 日）：
+1、本脚本会始终安装最新版的 Shadowsocks；
+2、修改配置文件 /etc/shadowsocks-libev/config.json 同时启用 IPv4 与 IPv6 支持：
+
+{
+"server":["[::0]","0.0.0.0"],
+"server_port":your_server_port,
+"local_address":"127.0.0.1",
+"local_port":1080,
+"password":"your_password",
+"timeout":600,
+"method":"aes-256-cfb"
+}
+
+3、Shadowsocks libev 版不能通过修改配置文件来多端口（只能开启多进程），如果你需要多端口请安装 Python 或 Go 版；
+
+特别说明：
+1、已安装旧版本的 shadowsocks 需要升级的话，需下载本脚本的最新版，运行卸载命令
+
+./shadowsocks-libev.sh uninstall 
+然后，再次执行本脚本即可安装最新版。
+
+参考链接：
+https://github.com/madeye/shadowsocks-libev
+
+标签: shadowsocks
+
+
+
+	
+2016.5.2更新
+1.2版优化性能,减少30%cpu占用,
+并优化拥塞策略,减少网络拥堵.
+
+说明
+1.FinalSpeed必须服务端和客户端同时配合使用,否则没有任何加速效果.
+2.服务器64M-128M内存即可稳定运行,搬瓦工由于存在超售问题至少要256M.
+3.openvz架构只支持udp协议.
+4.服务端可以和锐速共存,互不影响.
+
+FinalSpeed服务端Windows版
+
+注意问题
+Windows版服务端运行需要java环境和winpcap.
+
+下载地址
+http://fs.d1sm.net/finalspeed/finalspeed_server_windows.zip
+
+
+FinalSpeed服务端Linux版,支持Centos,Ubuntu,Debian
+
+注意问题
+1.服务端会启动iptables,如果服务器修改过ssh端口,请先开放ssh端口,否则可能导致ssh连接失败.
+开放端口命令
+service iptables start
+iptables -I INPUT -p tcp --dport 端口号 -j ACCEPT
+iptables -I OUTPUT -p tcp --sport 端口号 -j ACCEPT
+service iptables save
+2.不熟悉不要乱改配置,如果无法连接,请卸载后一键安装,不要做任何修改,按照教程操作.
+
+一键安装
+rm -f install_fs.sh
+wget  http://fs.d1sm.net/finalspeed/install_fs.sh
+chmod +x install_fs.sh
+./install_fs.sh 2>&1 | tee install.log
+
+debian,ubuntu下如果执行脚本出错,请切换到dash,
+切换方法: sudo dpkg-reconfigure dash 选no
+
+安装完后查看日志
+tail -f /fs/server.log
+如果服务端正常运行会有类似以下提示
+
+
+如果出现java运行失败的提示,说明脚本安装java失败,需要手动安装java.
+
+
+更新
+执行一键安装会自动完成更新.
+
+卸载
+sh /fs/stop.sh ; rm -rf /fs
+
+启动
+sh /fs/start.sh; tail -f /fs/server.log
+重复运行启动会出现以下端口绑定错误,请先停止或直接重启服务.
+
+
+停止
+sh /fs/stop.sh
+
+重新启动
+sh /fs/restart.sh; tail -f /fs/server.log
+
+查看日志
+tail -f /fs/server.log
+
+设置服务端口
+默认udp 150和tcp 150 ,修改端口后服务端会自动修改防火墙.
+linux版: mkdir -p /fs/cnf/ ; echo 端口号 > /fs/cnf/listen_port ; sh /fs/restart.sh
+windows 版: 在cnf目录下新建文件listen_port,文件内容为端口号.
+注意:由于finalspeed的工作原理,不要开放finalspeed所使用的tcp端口.
+
+设置开机启动
+chmod +x /etc/rc.local
+vi /etc/rc.local
+加入
+sh /fs/start.sh
+
+每天晚上3点自动重启
+crontab -e
+加入
+0 3 * * *  sh /fs/restart.sh
